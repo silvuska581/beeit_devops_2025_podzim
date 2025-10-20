@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
- 
-#!/usr/bin/env bash
 
 echo "Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie"
 echo "Druhy domaci ukol, zakladne prikazy"
