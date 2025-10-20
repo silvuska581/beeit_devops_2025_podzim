@@ -1,36 +1,48 @@
 #!/usr/bin/env bash
 
-echo " Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie" 
-echo " Druhy domaci ukol, zakladne prikazy"
-echo " Vypisanie vsetkych suborov v zlozke"
+ 
+#!/usr/bin/env bash
+
+echo "Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie"
+echo "Druhy domaci ukol, zakladne prikazy"
+
+echo
+echo "Vypisanie vsetkych suborov v zlozke"
 ls
 
-echo " Vylistovanie i schovanych"
-ls - la
+echo
+echo "Vylistovanie i schovanych"
+ls -la
 
-echo " Vypisanie chyboveho kodu"
+echo
+echo "Vypisanie chyboveho kodu posledneho prikazu"
 echo $?
 
-echo" Presmerovanie vysledku do outputu"
-ls|wc
-ls "Presmerovanie tajnych informaci" > output.txt
+echo
+echo "Presmerovanie vysledku do outputu (zapíšem text do suboru output.txt)"
+echo "Presmerovanie tajnych informaci" > output.txt
 
-echo"Vypisanie obsahu suboru"
+echo
+echo "Vypisanie obsahu suboru output.txt"
 cat output.txt
 
-echo"Presmerovanie erroru do erroru.txt"
+echo
+echo "Presmerovanie erroru do errors.txt"
 ls Idontexist 2> errors.txt
+echo "Chybový kód posledného príkazu bol:" $?
+
+echo "Obsah errors.txt:"
 cat errors.txt
 
-echo" Vypis shellu"
+echo
+echo "Vypis shellu"
 echo "$SHELL"
 
+echo
 echo "Kde sa nachadzam"
 pwd
 
-echo" Help"
-ls --help
-
+exit 0
 
 t -euo pipefail
 # linux_cli.sh – domácí úkol (VIM)
