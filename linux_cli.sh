@@ -1,6 +1,38 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
-set -euo pipefail
+
+echo " Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie" 
+echo " Druhy domaci ukol, zakladne prikazy"
+echo " Vypisanie vsetkych suborov v zlozke"
+ls
+
+echo " Vylistovanie i schovanych"
+ls - la
+
+echo " Vypisanie chyboveho kodu"
+echo $?
+
+echo" Presmerovanie vysledku do outputu"
+ls|wc
+ls "Presmerovanie tajnych informaci" > output.txt
+
+echo"Vypisanie obsahu suboru"
+cat output.txt
+
+echo"Presmerovanie erroru do erroru.txt"
+ls Idontexist 2> errors.txt
+cat errors.txt
+
+echo" Vypis shellu"
+echo "$SHELL"
+
+echo "Kde sa nachadzam"
+pwd
+
+echo" Help"
+ls --help
+
+
+t -euo pipefail
 # linux_cli.sh – domácí úkol (VIM)
 	# Spusť nápovědu: ./linux_cli.greet() {
   local name="${1:-světe}"   # když nezadáš jméno, použije se "světe"
