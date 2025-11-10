@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+<<<<<<< HEAD
+=======
+echo "Nainstalovanie a vypis linuxu"
+echo "nainstaluj WSL Ubuntu, nastav sudo apt update && sudo apt upgrade -y"
+echo "lsb_release -a"
+
+>>>>>>> 1f9224a (Vytvorenie dockeru)
 
 echo "Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie"
 echo "Druhy domaci ukol, zakladne prikazy"
@@ -41,6 +48,10 @@ echo "Kde sa nachadzam"
 pwd
 
 exit 0
+
+
+
+
 
 t -euo pipefail
 # linux_cli.sh – domácí úkol (VIM)
