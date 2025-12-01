@@ -1,261 +1,189 @@
 #!/usr/bin/env bash
 
-<<<<<<< HEAD
-=======
-echo "Nainstalovanie a vypis linuxu"
-echo "nainstaluj WSL Ubuntu, nastav sudo apt update && sudo apt upgrade -y"
-echo "lsb_release -a"
+# Domaci ukol September 23/2025
 
->>>>>>> 1f9224a (Vytvorenie dockeru)
+echo "=== Info o systému ==="
 
-echo "Toto je moj domaci ukol. Budem se pridavat ukoly z kazdej lekcie"
-echo "Druhy domaci ukol, zakladne prikazy"
+# 1) Jaký shell používám
+echo "Shell: $SHELL"
 
+# 2) Jaký je aktuální uživatel
+echo "Uživatel: $(whoami)"
+
+# 3) Jakou verzi Linuxu používám (/etc/os-release)
+echo "Verze Linuxu:"
+grep "^PRETTY_NAME=" /etc/os-release | cut -d= -f2 | tr -d '"'
+
+# 4) Jaké environment variables jsou na úrovni OS
 echo
-echo "Vypisanie vsetkych suborov v zlozke"
-ls
-
-echo
-echo "Vylistovanie i schovanych"
-ls -la
-
-echo
-echo "Vypisanie chyboveho kodu posledneho prikazu"
-echo $?
-
-echo
-echo "Presmerovanie vysledku do outputu (zapíšem text do suboru output.txt)"
-echo "Presmerovanie tajnych informaci" > output.txt
-
-echo
-echo "Vypisanie obsahu suboru output.txt"
-cat output.txt
-
-echo
-echo "Presmerovanie erroru do errors.txt"
-ls Idontexist 2> errors.txt
-echo "Chybový kód posledného príkazu bol:" $?
-
-echo "Obsah errors.txt:"
-cat errors.txt
-
-echo
-echo "Vypis shellu"
-echo "$SHELL"
-
-echo
-echo "Kde sa nachadzam"
-pwd
-
-exit 0
+echo "Environment variables:"
+printenv
 
 
+# Domaci ukol October 6/2025
 
+# Pevne daný log súbor v tvojom projekte
+LOG_MODE="stdout"
+LOG_FILE="/home/silvia_keshi/beeit_devops_2025_podzim/linux_cli.log"
 
+# Pevné cesty pre linky v projekte
+SRC_FILE="/home/silvia_keshi/beeit_devops_2025_podzim/test.txt"
+SOFT_LINK="/home/silvia_keshi/beeit_devops_2025_podzim/test_soft_link.txt"
+HARD_LINK="/home/silvia_keshi/beeit_devops_2025_podzim/test_hard_link.txt"
 
-t -euo pipefail
-# linux_cli.sh – domácí úkol (VIM)
-	# Spusť nápovědu: ./linux_cli.greet() {
-  local name="${1:-světe}"   # když nezadáš jméno, použije se "světe"
-  echo "Ahoj, $name!"
-}
+# Pevný adresár pre find
+SEARCH_DIR="/home/silvia_keshi/beeit_devops_2025_podzim"
 
-
-
-
-# ------------------ LOG ------------------
-LOG_MODE="stdout"    # "stdout" alebo "file"
-LOG_FILE=""          # cesta k log súboru, ak LOG_MODE="file"
-
-timestamp(){ date +"%Y-%m-%d %H:%M:%S"; }
-
-log(){        # info správa
-  local msg="[$(timestamp)] INFO: $*"
-  if [ "$LOG_MODE" = "file" ] && [ -n "$LOG_FILE" ]; then
-    echo "$msg" >> "$LOG_FILE"
-  else
-    echo "$msg"
-  fi
-}
-
-logError(){   # chybová správa
-  local msg="[$(timestamp)] ERROR: $*"
-  if [ "$LOG_MODE" = "file" ] && [ -n "$LOG_FILE" ]; then
-    echo "$msg" >> "$LOG_FILE"
-  else
-    echo "$msg" >&2
-  fi
-}
-
-# ------------------ HELP -----------------
-print_help(){
-  cat <<EOF
-Použitie: $0 [VOĽBY] AKCIA [ARGUMENTY]
-
-VOĽBY (dobrovoľné):
-  --log-file CESTA      log do súboru (inak ide na obrazovku)
-  --stdout              log na obrazovku (predvolené)
-
-AKCIE:
-  -h, --help            nápoveda
-  link soft|hard SRC TGT
-                        vytvorí link (soft=symlink, hard=len na súbor)
-  list                  vypíše balíčky s dostupným updatom (APT)
-  upgrade               urobí update/upgrade (APT, potrebuje sudo)
-  install-bin-link      vytvorí symlink /bin/linux_cli -> tento skript (sudo)
-
-Príklady:
-  $0 --stdout list
-  $0 --log-file ~/linux_cli.log upgrade
-  $0 link soft /etc/hosts /tmp/hosts_soft
-  $0 link hard ~/subor.txt /tmp/subor_hard
-  sudo $0 install-bin-link   # potom spúšťaj príkazom: linux_cli -h
-EOF
-
-echo "DU z 16.10.2025"
-
-LINK_PATH="/usr/local/bin/linux_cli"   # kam vytvoriť symlink
-SCRIPT_PATH="$(readlink -f "$0")"
-
-DO_LIST_UPGRADABLE=false
-DO_LIST_INSTALLED=false
-DO_UPGRADE=false
-DO_SYMLINK=false
-LOG_FILE=""
-EC=0
-
-usage() {
-  cat <<'EOF'
-Použitie: linux_cli.sh [voľby]
-  -a           vypísať balíčky, ktoré majú upgrade
-  -i           vypísať všetky nainštalované balíčky
-  -u           urobiť update + upgrade (APT)
-  -s           vytvoriť symlink /usr/local/bin/linux_cli -> tento skript
-  -f <súbor>   logovať výstup do súboru (append)
-  -h           nápoveda
-
-Viac volieb sa dá kombinovať (napr. -a -s -u).
-Exit kódy: 0 OK; 1 zlé argumenty/PM; 2 log; 3 symlink; 4 list; 5 upgrade.
-EOF
-}
-
-have_apt() { command -v apt-get >/dev/null 2>&1; }
-
-setup_logging() {
-  [ -z "$LOG_FILE" ] && return 0
-  if [ -e "$LOG_FILE" ]; then
-    echo "Log: '$LOG_FILE' existuje – budem PRIPÁJAŤ (append)."
-  else
-    if ! touch "$LOG_FILE" 2>/dev/null; then
-      echo "ERROR: Nedá sa vytvoriť log súbor: $LOG_FILE" >&2
-      EC=2
-      return 1
+log() {
+    if [ "$LOG_MODE" = "file" ]; then
+        echo "[INFO] $*" >> "$LOG_FILE"
+    else
+        echo "[INFO] $*"
     fi
-    echo "Log: vytvorený '$LOG_FILE'."
-  fi
-  # všetok výstup aj chyby pôjdu do logu (append) aj na obrazovku
-  exec > >(tee -a "$LOG_FILE") 2>&1
+}
+
+logError() {
+    echo "[ERROR] $*" >&2
+}
+
+set_log_file() {
+    LOG_MODE="file"
+    log "Logování nastaveno do souboru: $LOG_FILE"
+}
+
+set_log_stdout() {
+    LOG_MODE="stdout"
+    log "Logování nastaveno na STDOUT."
+}
+
+create_soft_link() {
+
+    if [ ! -e "$SRC_FILE" ]; then
+        log "Zdrojový soubor neexistuje, vytvářím: $SRC_FILE"
+        echo "test file" > "$SRC_FILE"
+    fi
+    ln -sfn "$SRC_FILE" "$SOFT_LINK"
+    log "Soft link: $SOFT_LINK → $SRC_FILE"
+}
+
+create_hard_link() {
+    if [ ! -e "$SRC_FILE" ]; then
+        logError "Zdrojový soubor neexistuje: $SRC_FILE"
+        return 1
+    fi
+    ln -f "$SRC_FILE" "$HARD_LINK"
+    log "Hard link: $HARD_LINK → $SRC_FILE"
 }
 
 list_upgradable() {
-  echo "== Upgradovateľné balíčky =="
-  # ticho obnov indexy (ak je sudo k dispozícii)
-  apt-get update -qq >/dev/null 2>&1 || true
-  # zoznam upgradovateľných (ignorujeme prvý riadok hlavičky)
-  if ! apt list --upgradeable 2>/dev/null | tail -n +2; then
-    echo "ERROR: Výpis upgradovateľných balíčkov zlyhal." >&2
-    [ $EC -eq 0 ] && EC=4
-  fi
+    log "Hledám balíčky s dostupným updatem…"
+    apt list --upgradable 2>/dev/null
 }
 
-list_installed() {
-  echo "== Všetky nainštalované balíčky =="
-  if ! apt list --installed 2>/dev/null; then
-    echo "ERROR: Výpis nainštalovaných balíčkov zlyhal." >&2
-    [ $EC -eq 0 ] && EC=4
-  fi
+upgrade_packages() {
+    log "Provádím apt update && apt upgrade -y…"
+    sudo apt update && sudo apt upgrade -y
 }
 
-do_upgrade() {
-  echo "== Update + Upgrade (APT) =="
-  if ! (sudo apt-get update && sudo apt-get upgrade -y); then
-    echo "ERROR: Upgrade zlyhal. Skús spustiť so sudo." >&2
-    [ $EC -eq 0 ] && EC=5
-  fi
+find_beae_files() {
+    log "Hledám soubory v $SEARCH_DIR s písmeny b e a e v tomto pořadí…"
+    find "$SEARCH_DIR" -regextype posix-extended -regex '.*b.*e.*a.*e.*' 2>/dev/null
 }
 
-create_symlink() {
-  local target="$LINK_PATH"
-  local dir; dir="$(dirname "$target")"
+show_help() {
+    cat <<EOF
+Použití: $0 PŘÍKAZ
 
-  if [ -L "$target" ]; then
-    local points_to; points_to="$(readlink -f "$target")"
-    if [ "$points_to" = "$SCRIPT_PATH" ]; then
-      echo "Symlink už existuje a ukazuje sem: $target -> $points_to"
-      return 0
-    else
-      echo "ERROR: Symlink už existuje, ale ukazuje inde: $target -> $points_to" >&2
-      [ $EC -eq 0 ] && EC=3
-      return 1
-    fi
-  elif [ -e "$target" ]; then
-    echo "ERROR: '$target' už existuje (nie je symlink)." >&2
-    [ $EC -eq 0 ] && EC=3
-    return 1
-  fi
+  -h, help
+      Zobrazí tuto nápovědu.
 
-  if [ ! -w "$dir" ]; then
-    echo "ERROR: Nemám právo zapisovať do '$dir'." >&2
-    echo "Spusti: sudo ln -s \"$SCRIPT_PATH\" \"$target\"" >&2
-    [ $EC -eq 0 ] && EC=3
-    return 1
-  fi
+  log-file
+      Logování do souboru:
+        $LOG_FILE
 
-  if ln -s "$SCRIPT_PATH" "$target"; then
-    echo "Vytvorený symlink: $target -> $SCRIPT_PATH"
-  else
-    echo "ERROR: Symlink sa nepodarilo vytvoriť." >&2
-    [ $EC -eq 0 ] && EC=3
-  fi
+  log-stdout
+      Logování na obrazovku .
+
+  link-soft
+      Vytvoří soft link:
+        zdroj: $SRC_FILE
+        link:  $SOFT_LINK
+
+  link-hard
+      Vytvoří hard link:
+        zdroj: $SRC_FILE
+        link:  $HARD_LINK
+
+  list-upgrades
+      Vypíše balíčky, které mají dostupný update.
+
+  upgrade
+      Provede apt update && apt upgrade -y.
+
+  find-beae
+      Najde soubory v:
+        $SEARCH_DIR
+      které mají v názvu písmena b e a e v tomto pořadí (nemusí být vedle sebe).
+EOF
 }
 
-# --- Parsovanie volieb ---
-if [ $# -eq 0 ]; then
-  usage; exit 1
-fi
+main() {
+    case "$1" in
+        -h|help|"")
+            show_help
+            ;;
+        log-file)
+            set_log_file
+            ;;
+        log-stdout)
+            set_log_stdout
+            ;;
+        link-soft)
+            create_soft_link
+            ;;
+        link-hard)
+            create_hard_link
+            ;;
+        list-upgrades)
+            list_upgradable
+            ;;
+        upgrade)
+            upgrade_packages
+            ;;
+        find-beae)
+            find_beae_files
+            ;;
+        *)
+            logError "Neznámý příkaz: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+}
 
-while getopts ":aiusf:h" opt; do
-  case "$opt" in
-    a) DO_LIST_UPGRADABLE=true ;;
-    i) DO_LIST_INSTALLED=true  ;;
-    u) DO_UPGRADE=true         ;;
-    s) DO_SYMLINK=true         ;;
-    f) LOG_FILE="$OPTARG"      ;;
-    h) usage; exit 0           ;;
-    :) echo "ERROR: Voľba -$OPTARG vyžaduje argument." >&2; usage; exit 1 ;;
-    \?) echo "ERROR: Neznáma voľba -$OPTARG" >&2; usage; exit 1 ;;
-  esac
-done
+	main "$@"
 
-# Log (ak -f)
-setup_logging || true
+#Domaci ukol October 6/2025
 
-# Kontrola správcu balíčkov
-if ! have_apt; then
-  echo "ERROR: Tento jednoduchý skript podporuje len APT (Ubuntu/Debian/WSL)." >&2
-  [ $EC -eq 0 ] && EC=1
-fi
+process_info() {
+    log "Info o procesech:"
 
-# --- Spustenie akcií (poradie je len príklad) ---
-$DO_LIST_UPGRADABLE && have_apt && list_upgradable
-$DO_LIST_INSTALLED  && have_apt && list_installed
-$DO_SYMLINK && create_symlink
-$DO_UPGRADE && have_apt && do_upgrade
+    # PID aktuálního procesu
+    echo "PID aktuálního procesu: $$"
 
-# Ak nebola zadaná žiadna akcia:
-if ! $DO_LIST_UPGRADABLE && ! $DO_LIST_INSTALLED && ! $DO_UPGRADE && ! $DO_SYMLINK; then
-  usage
-  [ $EC -eq 0 ] && EC=1
-fi
+    # PID rodiče
+    echo "PID rodičovského procesu: $PPID"
 
-exit $EC
+    # Priorita procesu (PRI)
+    echo -n "Priorita procesu: "
+    ps -p $$ -o pri= 2>/dev/null || echo "nelze zjistit"
+
+    # Celkový počet procesů v OS
+    echo -n "Celkový počet procesů v systému: "
+    ps -e --no-headers 2>/dev/null | wc -l
+}
+
+
+
+
+
