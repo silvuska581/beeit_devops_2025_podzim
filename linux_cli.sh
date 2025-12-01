@@ -123,7 +123,7 @@ Použití: $0 PŘÍKAZ
   find-beae
       Najde soubory v:
         $SEARCH_DIR
-      které mají v názvu písmena b e a e v tomto pořadí (nemusí být vedle sebe).
+      které mají v názvu písmena b e a e v tomto pořadí.
 EOF
 }
 
